@@ -1,0 +1,13 @@
+name: my_shiny_app
+title: my_shiny_app
+username:
+account: umnatisya
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9254542
+bundleId: 7310211
+url: https://umnatisya.shinyapps.io/my_shiny_app/
+when: 1686038045.61087
+lastSyncTime: 1686038045.61088
+asMultiple: FALSE
+asStatic: FALSE
