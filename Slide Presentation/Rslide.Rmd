@@ -1,0 +1,147 @@
+---
+title: "Skincare Recommender Engine"
+subtitle: "WQD7001 Group Project"  
+author: 
+  - "Group 7 <br/> Data Brains"
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    css: custom.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+# Set the base color and fonts
+style_mono_light(
+  base_color = "#8F433B",
+  header_font_google = google_font("Martel"),
+  text_font_google = google_font("Lato"),
+  code_font_google = google_font("Fira Mono")
+)
+```
+
+
+## Group Members
+<center>![Image Caption](https://github.com/s2195163/skincareApp/blob/main/Images/5.png?raw=true) </center> 
+</br>
+
+|No   |Name                                   |Matric Number|Roles      |
+|:---:|:--------------------------------------|:------------|:----------|
+|1    |Izzah Athirah binti Mohamad Radzi      |S2179297     |Leader     |
+|2    |Nur Aisyah binti Yusof                 |22072845     |Secretary  |
+|3    |Che Nadzirah binti Che Ab Razak        |S2170502     |Detective  |
+|4    |Nur Natisya Binti Abdul Yazid          |S2195163     |The Maker  |
+
+---
+
+## Executive Summary
+
+
+####Problem Statement:
+Consumer find it challenging to find the ideal products to use. Skincare recommender engine might help overcome the difficulties and enhance consumer experience and satisfaction in beauty and wellness journey.
+
+####Objective:
+- To assist customers in decision-making, enhance customer satisfaction with skincare purchases and their entire journeys towards beauty and well-being, as well as to improve the consumer experience.
+<br/>
+- To assist people in their beauty and wellness journey by recommending specific skin care products based on the product type they are looking for and brand they prefer within their allocated budget.
+
+####End-User:
+- End-user: Customer <br/>
+- Used [Google Form](https://forms.gle/idThn6Kaer9raegQ9) to get feedback from customer.
+
+---
+##Mechanics
+
+- Hardware:
+  - Laptop
+
+- Software:
+  - RStudio: It is an integrated development environment (IDE) created expressly 	for R. It offers a simple user interface together with strong tools and features that improve R 	programming. 
+  - Shiny: The R web development framework Shiny enables users to create dashboards and interactive 	web apps.
+
+- Platform:
+  - Shinyapps.io: No need to set up a server, Shinyapps.io offers a simple way to share and 	distribute existing Shiny applications online
+  - RPubs: Users can quickly publish and distribute their RMarkdown papers on RPubs, a platform offered by RStudio
+  - [GitHub](https://github.com/s2195163/skincareApp.git): GitHub were used to upload all the files and make it available for public.
+
+---
+#Methodology
+</br>
+</br>
+<center><middle><img src="https://github.com/s2195163/skincareApp/blob/main/Images/1.png?raw=true" width="1000" /></center>
+<br/>
+<center>**Data Science Process**
+
+---
+##Experiment and Results
+[Shiny Apps](https://umnatisya.shinyapps.io/my_shiny_app/)
+<center><img src="https://github.com/s2195163/skincareApp/blob/main/Images/2.png?raw=true" style="max-width: 70%;" /></center>
+<center>**Skincare Product Recommender App**
+
+
+
+---
+##Deployment
+To get feedback from the users, we shared a questionnaire along with the application. They can try to explore the application and use it first and directly answer the questions on their view of our application (scale from 1 to 5) and an open-ended question that enables them to suggest their ideas for improvement of the application.  
+
+</br>
+<div style="display: flex; justify-content: center; align-items: center;height:30%;">
+  <img src="https://github.com/s2195163/skincareApp/blob/main/Images/4.jpg?raw=true" alt="Image" />
+</div>
+<center>**User Rating**</center>
+</br>
+Out of 22 responses we have received, more than half of the respondents (54.5%) rated 5/5 for the app, while the remainder rated min 3 and 4 out of 5 marks.
+
+---
+##Future work and Conclusion
+
+Based on the feedback from end users, there are a few things that we are planning to improve on our application. Some of them are: 
+
+1. To find other datasets that can be used so that we can filter more variables like skin type, skin concern and so on.
+
+2. To add pictures on every product we listed there so the users can see how the products look like.
+
+3. To number the ingredients list so that users will know the ingredients are referring to which product.
+
+4. To beautify the look of our application by inserting nicer background and make it more attractive to users.
+
+5. To convert our application from website to mobile application so that people can use easily on their phone.
+
+</br>
+<div style="text-align: justify;">
+In conclusion, Skincare Product Recommender could be a beneficial tool for anyone who wants to know specific skin care products based on the product type they are looking for and the brand they prefer within their allocated budget. Our main intention is to aid skincare lovers on their skincare journey and to make it easier for skincare beginners to start somewhere. Not just that, this tool might save our time to do some research on which products we should get as there is an abundance of products sold in the market and it might be hard for us to choose a specific one.
+</div>
+
+---
+<style>
+.slide-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 3em;
+}
+</style>
+
+<div class="slide-center">
+  <p><strong>Thank You!</strong></p>
+</div>
