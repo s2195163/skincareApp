@@ -1,0 +1,324 @@
+---
+title: "Data Cleaning and EDA"
+author: "Data Brains"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE}
+library(dplyr)  # Load the dplyr package
+
+data<-read.csv("skincare_products.csv")
+```
+
+## DATA CLEANING
+
+```{r}
+# Check the structure and summary of the dataset
+str(data)
+summary(data)
+```
+
+```{r}
+# Identify missing values
+missing_values <- is.na(data)
+
+# Count the number of missing values per variable
+colSums(missing_values)
+```
+
+```{r}
+#remove product types related with body care.
+# Remove rows where 'product_type' is 'Bath Salts'
+data <- data[data$product_type != "Bath Salts", ]
+
+# Remove rows where 'product_type' is 'Bath Oil'
+data <- data[data$product_type != "Bath Oil", ]
+
+# Remove rows where 'product_type' is 'Body Wash'
+data <- data[data$product_type != "Body Wash", ]
+```
+
+```{r}
+# Convert 'price' column to float
+data$price <- as.numeric(gsub("[^0-9.]", "", data$price))
+```
+
+```{r}
+# Print the shape of the dataframe
+cat("Number of rows:", nrow(data), "\n")
+cat("Number of columns:", ncol(data), "\n")
+
+# Create a dataframe with the counts of each product type
+Prod_Type <- data.frame(table(data$product_type))
+colnames(Prod_Type) <- c("product_type", "count")
+
+# Print the dataframe
+print(Prod_Type)
+```
+
+```{r}
+# Group by 'product_type' and calculate the mean price
+PricexProd <- data %>%
+  group_by(product_type) %>%
+  summarize(mean_price = mean(price)) %>%
+  arrange(desc(mean_price))
+
+# Print the result
+print(PricexProd)
+```
+
+```{r}
+#CREATING NEW VARIABLE "brand"
+# Define the specific brand names to consider
+specific_brands <- c("Alchimie Forever","Aromatherapy Associates","Balance Me","Bloom & Blossom","Bobbi Brown","Bondi Sands","Bubble T","Burt's Bees",
+                     "By Terry","Comfort Zone","Dear, Klairs", "Dr Dennis Gross","Dr. Hauschka","Dr. Brandt","Dr. Hauschka","Dr. PAWPAW","Egyptian Magic",
+                     "Elizabeth Arden","Emma Hardie","Erno Laszlo","Estee Lauder","Eve Lom","Face by Skinny Tan","Fade Out","First Aid Beauty",
+                     "Frank Body","Goldfaden MD","Holika Holika","Indeed Labs","Instant Effects","Institut Esthederm","James Read","Jo Malone","L.A BRUKET",
+                     "La Roche-Posay","Lancer Skincare","Laura Mercier","Little Butterfly","Liz Earle","L'Oreal Paris","Love Boo","Lumene Nordic",
+                     "Mama Mio","Manuka Doctor","Molton Brown","Natura Bisse","Neal's Yard","Oh K!","Perricone MD","Pestle & Mortar",
+                     "Peter Thomas","Piz Buin","Radical Skincare","Recipe for Men","Revolution Skincare","Salcura Antiac","Sanctuary Spa",
+                     "Sarah Chapman","Sea Magik","Skin Doctors","Sol de Janeiro","Spa Magik Organiks","Talika Skintelligence","The Chemistry",
+                     "The INKEY","The Ordinary","The Organic Pharmacy","The Ritual","Too Faced","yes to")
+
+# Create a new variable 'brand' by extracting data from 'product_name' based on specific criteria
+data$brand <- ""
+for (brand in specific_brands) {
+  data$brand <- ifelse(grepl(brand, data$product_name), brand, data$brand)
+}
+data$brand[data$brand == ""] <- gsub("\\s.*", "", data$product_name[data$brand == ""])
+```
+
+```{r}
+#FREQUENCY TABLE FOR VARIABLE PRODUCT TYPE, BRAND
+# Create a frequency table for product types
+freq_table1 <- table(data$product_type)
+
+# Print the frequency table
+print(freq_table1)
+
+# Create a frequency table for brand
+freq_table2 <- table(data$brand)
+
+# Print the frequency table
+print(freq_table2)
+```
+
+## EXPLORATORY DATA ANALYSIS
+
+```{r, message=FALSE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+###DATA VISUALIZATION
+
+#TOP 10 BRANDS WITH AVERAGE PRICE
+# Calculate the count of each brand
+brand_counts <- data %>%
+  count(brand) %>%
+  arrange(desc(n))
+
+# Average price by brand
+avg_price_by_brand <- data %>%
+  group_by(brand) %>%
+  summarise(avg_price = mean(price, na.rm = TRUE)) %>%
+  arrange(desc(avg_price))
+
+# Display top 10 brands
+top_10_brands <- head(avg_price_by_brand, 10)
+
+# Create a vertical bar chart of the average prices of the top 10 brands
+ggplot(top_10_brands, aes(x = reorder(brand, -avg_price), y = avg_price)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  labs(title = "Top 10 Brands by Average Price", x = "Brand", y = "Average Price") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+# Create the chart: Distribution of product type
+chart1 <- ggplot(data, aes(x = product_type)) +
+  geom_bar(fill = "lightblue", color = "black") +
+  labs(title = "Distribution of Product Types", x = "Product Type", y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+print(chart1)
+```
+
+```{r, message=FALSE}
+library(wordcloud)
+library(tm)
+```
+
+```{r}
+# Word cloud of clean ingredients
+clean_ingreds <- unlist(strsplit(data$clean_ingreds, ","))
+wordcloud(clean_ingreds, max.words = 50, random.order = FALSE)
+```
+
+```{r}
+# Create the boxplot before removing outliers
+boxplot_before <- ggplot(data, aes(y = price)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Price (Before Removing Outliers)", y = "Price") +
+  theme_minimal()
+print(boxplot_before)
+```
+
+```{r}
+# Calculate the lower and upper bounds for outliers using the IQR method
+q1 <- quantile(data$price, 0.25)
+q3 <- quantile(data$price, 0.75)
+iqr <- q3 - q1
+lower_bound <- q1 - 1.5 * iqr
+upper_bound <- q3 + 1.5 * iqr
+
+# Remove outliers
+data_filtered <- subset(data, price >= lower_bound & price <= upper_bound)
+```
+
+```{r}
+# Create the boxplot after removing outliers
+boxplot_after <- ggplot(data_filtered, aes(y = price)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Price (After Removing Outliers)", y = "Price") +
+  theme_minimal()
+print(boxplot_after)
+```
+
+### Cross-tabulate
+```{r}
+categorical_vars <- c("product_type", "brand")
+```
+
+```{r}
+# Create a cross-tabulation with frequency counts and percentages for each categorical variable
+for (var in categorical_vars) {
+  cross_tab <- table(data[[var]])
+
+  if (var == "brand") {
+    # Get the top 10 brands
+    top_10_brands <- names(head(sort(cross_tab, decreasing = TRUE), 10))
+
+    # Filter the cross-tabulation for the top 10 brands
+    cross_tab <- cross_tab[top_10_brands]
+  }
+
+  # Calculate percentage
+  cross_tab_percentage <- prop.table(cross_tab) * 100
+
+  # Convert the cross-tabulation and percentage to data frames
+  cross_tab_df <- as.data.frame(cross_tab)
+  cross_tab_percentage_df <- as.data.frame(cross_tab_percentage)
+
+  # Format the percentage column with four decimal places and the '%' symbol
+  cross_tab_percentage_df$Freq <- paste0(format(cross_tab_percentage_df$Freq, nsmall = 4), "%")
+
+  # Print the cross-tabulation with frequency counts and percentages as a table
+  cat("Cross-Tabulation for", var, "\n")
+  print(knitr::kable(cross_tab_df))
+  cat("\n")
+  cat("Percentage for", var, "\n")
+  print(knitr::kable(cross_tab_percentage_df))
+  cat("\n")
+}
+```
+
+```{r}
+# Create a cross-tabulation with frequency counts and percentages for each categorical variable
+for (var in categorical_vars) {
+  cross_tab <- table(data[[var]])
+
+  if (var == "brand") {
+    # Get the top 10 brands
+    top_10_brands <- names(head(sort(cross_tab, decreasing = TRUE), 10))
+
+    # Filter the cross-tabulation for the top 10 brands
+    cross_tab <- cross_tab[top_10_brands]
+  }
+
+  # Calculate percentage
+  cross_tab_percentage <- prop.table(cross_tab) * 100
+
+  # Convert the percentage to a data frame
+  cross_tab_percentage_df <- as.data.frame(cross_tab_percentage)
+
+  # Plot the percentage as a bar chart
+  p <- ggplot(cross_tab_percentage_df, aes(x = Var1, y = Freq)) +
+    geom_bar(stat = "identity", fill = "green") +
+    labs(x = var, y = "Percentage") +
+    ggtitle(paste0("Percentage for ", var))
+
+  # Print the plot
+  print(p)
+}
+```
+
+### Mode
+```{r}
+categorical_vars <- c("product_type", "brand","product_name")
+
+for (var in categorical_vars) {
+  if (var == "product_name") {
+    next
+  }
+  
+  freq_table <- table(data[[var]])
+  mode <- names(freq_table)[which.max(freq_table)]
+  
+  cat("Mode for", var, ":", mode, "\n")
+}
+```
+
+```{r}
+library(ggplot2)
+
+categorical_vars <- c("product_type", "brand")
+
+# Create a cross-tabulation with frequency counts for each categorical variable
+for (var in categorical_vars) {
+  freq_table <- table(data[[var]])
+
+  # Find the category with the highest count (mode)
+  mode <- names(freq_table)[which.max(freq_table)]
+
+  # Convert the frequency table to a data frame
+  freq_table_df <- data.frame(Category = names(freq_table), Frequency = as.vector(freq_table))
+
+  # Plot the bar chart
+  p <- ggplot(freq_table_df, aes(x = Category, y = Frequency, fill = Category == mode)) +
+    geom_bar(stat = "identity") +
+    labs(x = var, y = "Frequency") +
+    ggtitle(paste0("Frequency Counts for ", var)) +
+    scale_fill_manual(values = c("FALSE" = "blue", "TRUE" = "red")) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    guides(fill = FALSE)
+
+  # Print the plot
+  print(p)
+
+  # Print the mode
+  cat("Mode for", var, ":", mode, "\n\n")
+}
+```
+
+## Chi-square Analysis
+
+```{r}
+#analyze relationship between variables
+
+# Create the contingency table
+cont_table <- table(data$clean_ingreds, data$product_type)
+
+# Perform chi-square test of independence
+chi_test <- chisq.test(cont_table)
+
+# Print the test results
+print(chi_test)
+```
